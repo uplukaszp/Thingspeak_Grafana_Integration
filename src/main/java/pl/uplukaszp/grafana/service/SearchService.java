@@ -1,12 +1,49 @@
 package pl.uplukaszp.grafana.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import pl.uplukaszp.grafana.domain.grafana.Metric;
-import pl.uplukaszp.grafana.dto.SearchTargetDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import pl.uplukaszp.grafana.domain.grafana.Metric;
+import pl.uplukaszp.grafana.domain.thingspeak.ApiKey;
+import pl.uplukaszp.grafana.domain.thingspeak.Channel;
+import pl.uplukaszp.grafana.domain.thingspeak.ChannelDescription;
+import pl.uplukaszp.grafana.domain.thingspeak.Field;
+import pl.uplukaszp.grafana.dto.SearchTargetDTO;
+import pl.uplukaszp.grafana.repository.ChannelRepository;
+
+@Service
 public class SearchService {
-	List<Metric> getMetrics(SearchTargetDTO target) {
+
+	@Autowired
+	ChannelRepository channelRepository;
+
+	public List<Metric> getMetrics(SearchTargetDTO target) {
+		List<Metric> metrics = new ArrayList<>();
+		List<ChannelDescription> channelDescriptions = channelRepository.getChannelDescriptions();
+		for (ChannelDescription channelDescription : channelDescriptions) {
+			String id = channelDescription.getId();
+			String readKey = getKey(channelDescription.getApiKeys());
+			Channel channelFeed = channelRepository.getChannelFeed(id, readKey);
+			List<Field> fields = channelFeed.getFields();
+			for (Field field : fields) {
+				Metric metric = new Metric();
+				metric.setText(channelFeed.getName() + " - " + field.getName());
+				metric.setValue(channelDescription.getId() + "," + field.getNumber());
+				metrics.add(metric);
+			}
+
+		}
+		return metrics;
+	}
+
+	private String getKey(List<ApiKey> apiKeys) {
+		for (ApiKey apiKey : apiKeys) {
+			if (apiKey.getWriteFlag() == false)
+				return apiKey.getApiKey();
+		}
 		return null;
 	}
 }
