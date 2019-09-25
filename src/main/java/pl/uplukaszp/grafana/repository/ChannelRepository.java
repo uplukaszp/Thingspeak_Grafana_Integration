@@ -25,12 +25,14 @@ public class ChannelRepository {
 				"https://api.thingspeak.com/channels.json?api_key="+apiKey, HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<ChannelDescription>>() {
 				});
-		System.out.println(response.getBody().size());
+		System.out.println(response.getBody());
 		return response.getBody();
 	}
 	public Channel getChannelFeed(String id,String readKey){
 		RestTemplate temp = new RestTemplate();
-		ChannelFeed feed = temp.getForObject("https://api.thingspeak.com/channels/"+id+"/feeds.json?results=0&api_key="+readKey, ChannelFeed.class);
+		
+		String url = "https://api.thingspeak.com/channels/"+id+"/feeds.json?results=0";
+		ChannelFeed feed = temp.getForObject(url, ChannelFeed.class);
 		System.out.println(feed.getChannel());
 		return feed.getChannel();
 	}
