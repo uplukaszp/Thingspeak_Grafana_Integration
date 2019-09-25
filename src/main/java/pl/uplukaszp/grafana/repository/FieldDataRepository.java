@@ -29,7 +29,6 @@ public class FieldDataRepository {
 		System.out.println(url);
 		FieldData feed = temp.getForObject(url, FieldData.class);
 		return feed;
-
 	}
 
 }

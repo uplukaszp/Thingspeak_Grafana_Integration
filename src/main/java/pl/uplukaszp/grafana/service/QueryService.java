@@ -34,15 +34,18 @@ public class QueryService {
 				System.out.println(query.getFrom());
 				String from = convertDate(query.getFrom());
 				String to = convertDate(query.getTo());
-				FieldData fieldData = repo.getFieldData(split[0], split[1], from, to, null);
+
+				FieldData fieldData = repo.getFieldData(split[0], split[1], from, to, targetDTO.getData());
 				timeSeriesGraphDataResponse.setTarget(fieldData.getChannel().getName() + "-"
 						+ fieldData.getChannel().getField(Integer.valueOf(split[1])));
 				List<Feed> feeds = fieldData.getFeeds();
 				for (int i = 0; i < feeds.size(); i++) {
-					DataPoint dataPoint = new DataPoint();
-					dataPoint.setMetric(feeds.get(i).getValue());
-					dataPoint.setTimestamp(feeds.get(i).getCreatedAt());
-					timeSeriesGraphDataResponse.addDataPoint(dataPoint);
+					if (feeds.get(i).getValue() != null) {
+						DataPoint dataPoint = new DataPoint();
+						dataPoint.setTimestamp(feeds.get(i).getCreatedAt());
+						dataPoint.setMetric(feeds.get(i).getValue());
+						timeSeriesGraphDataResponse.addDataPoint(dataPoint);
+					}
 				}
 
 				response.add(timeSeriesGraphDataResponse);
