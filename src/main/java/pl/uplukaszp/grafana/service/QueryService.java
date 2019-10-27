@@ -13,13 +13,17 @@ import pl.uplukaszp.grafana.domain.thingspeak.Feed;
 import pl.uplukaszp.grafana.domain.thingspeak.FieldData;
 import pl.uplukaszp.grafana.dto.QueryDTO;
 import pl.uplukaszp.grafana.dto.TargetDTO;
+import pl.uplukaszp.grafana.repository.ChannelRepository;
 import pl.uplukaszp.grafana.repository.FieldDataRepository;
 
 @Service
 public class QueryService {
 
 	@Autowired
-	FieldDataRepository repo;
+	FieldDataRepository fieldDataRepo;
+
+	@Autowired
+	ChannelRepository channelRepo;
 
 	public List<GraphDataResponse> getResponse(QueryDTO query) {
 		List<GraphDataResponse> response = new ArrayList<>();
@@ -34,10 +38,13 @@ public class QueryService {
 				System.out.println(query.getFrom());
 				String from = convertDate(query.getFrom());
 				String to = convertDate(query.getTo());
-
-				FieldData fieldData = repo.getFieldData(split[0], split[1], from, to, targetDTO.getData());
+				String channelId = split[0];
+				String readKey = channelRepo.getReadKey(channelId);
+				String fieldNumber = split[1];
+				FieldData fieldData = fieldDataRepo.getFieldData(channelId, fieldNumber, from, to, targetDTO.getData(),
+						readKey);
 				timeSeriesGraphDataResponse.setTarget(fieldData.getChannel().getName() + "-"
-						+ fieldData.getChannel().getField(Integer.valueOf(split[1])));
+						+ fieldData.getChannel().getField(Integer.valueOf(fieldNumber)));
 				List<Feed> feeds = fieldData.getFeeds();
 				for (int i = 0; i < feeds.size(); i++) {
 					if (feeds.get(i).getValue() != null) {

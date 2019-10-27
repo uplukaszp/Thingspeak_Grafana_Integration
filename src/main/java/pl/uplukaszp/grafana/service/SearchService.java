@@ -25,7 +25,7 @@ public class SearchService {
 		List<ChannelDescription> channelDescriptions = channelRepository.getChannelDescriptions();
 		for (ChannelDescription channelDescription : channelDescriptions) {
 			String id = channelDescription.getId();
-			String readKey = getKey(channelDescription.getApiKeys());
+			String readKey = channelRepository.getReadKey(id);
 			Channel channelFeed = channelRepository.getChannelFeed(id, readKey);
 			List<Field> fields = channelFeed.getFields();
 			for (Field field : fields) {
@@ -34,16 +34,8 @@ public class SearchService {
 				metric.setValue(channelDescription.getId() + "," + field.getNumber());
 				metrics.add(metric);
 			}
-
 		}
 		return metrics;
 	}
 
-	private String getKey(List<ApiKey> apiKeys) {
-		for (ApiKey apiKey : apiKeys) {
-			if (apiKey.getWriteFlag() == false)
-				return apiKey.getApiKey();
-		}
-		return null;
-	}
 }

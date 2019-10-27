@@ -15,12 +15,12 @@ public class FieldDataRepository {
 	@Value("${thingspeak.apiKey}")
 	private String apiKey;
 
-	public FieldData getFieldData(String channelId, String field, String start, String end,
-			Map<String, String> params) {
+	public FieldData getFieldData(String channelId, String field, String start, String end, Map<String, String> params,
+			String readKey) {
 
 		RestTemplate temp = new RestTemplate();
 		String url = "https://api.thingspeak.com/channels/" + channelId + "/fields/" + field + ".json?start=" + start
-				+ "&end=" + end;
+				+ "&end=" + ((readKey != null) ? "&api_key=" + readKey : "");
 		if (params != null && (!params.isEmpty())) {
 			for (Entry<String, String> entry : params.entrySet()) {
 				url += "&" + entry.getKey() + "=" + entry.getValue();
