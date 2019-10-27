@@ -35,25 +35,17 @@ public class QueryService {
 			} else if (type.equals("timeseries")) {
 				TimeSeriesGraphDataResponse timeSeriesGraphDataResponse = new TimeSeriesGraphDataResponse();
 				String[] split = targetDTO.getTarget().split(",");
-				System.out.println(query.getFrom());
+				String channelId = split[0];
+				String fieldNumber = split[1];
 				String from = convertDate(query.getFrom());
 				String to = convertDate(query.getTo());
-				String channelId = split[0];
 				String readKey = channelRepo.getReadKey(channelId);
-				String fieldNumber = split[1];
 				FieldData fieldData = fieldDataRepo.getFieldData(channelId, fieldNumber, from, to, targetDTO.getData(),
 						readKey);
-				timeSeriesGraphDataResponse.setTarget(fieldData.getChannel().getName() + "-"
-						+ fieldData.getChannel().getField(Integer.valueOf(fieldNumber)));
+				timeSeriesGraphDataResponse.setTarget(getTargetString(fieldNumber, fieldData));
+
 				List<Feed> feeds = fieldData.getFeeds();
-				for (int i = 0; i < feeds.size(); i++) {
-					if (feeds.get(i).getValue() != null) {
-						DataPoint dataPoint = new DataPoint();
-						dataPoint.setTimestamp(feeds.get(i).getCreatedAt());
-						dataPoint.setMetric(feeds.get(i).getValue());
-						timeSeriesGraphDataResponse.addDataPoint(dataPoint);
-					}
-				}
+				addDataPointsFromFeeds(timeSeriesGraphDataResponse, feeds);
 
 				response.add(timeSeriesGraphDataResponse);
 			}
@@ -61,7 +53,22 @@ public class QueryService {
 		return response;
 	}
 
+	private String getTargetString(String fieldNumber, FieldData fieldData) {
+		return fieldData.getChannel().getName() + "-" + fieldData.getChannel().getField(Integer.valueOf(fieldNumber));
+	}
+
 	private String convertDate(String date) {
 		return date.replace("T", " ").replace("Z", "");
+	}
+
+	private void addDataPointsFromFeeds(TimeSeriesGraphDataResponse timeSeriesGraphDataResponse, List<Feed> feeds) {
+		for (int i = 0; i < feeds.size(); i++) {
+			if (feeds.get(i).getValue() != null) {
+				DataPoint dataPoint = new DataPoint();
+				dataPoint.setTimestamp(feeds.get(i).getCreatedAt());
+				dataPoint.setMetric(feeds.get(i).getValue());
+				timeSeriesGraphDataResponse.addDataPoint(dataPoint);
+			}
+		}
 	}
 }

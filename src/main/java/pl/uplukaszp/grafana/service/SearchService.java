@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.uplukaszp.grafana.domain.grafana.Metric;
-import pl.uplukaszp.grafana.domain.thingspeak.ApiKey;
 import pl.uplukaszp.grafana.domain.thingspeak.Channel;
 import pl.uplukaszp.grafana.domain.thingspeak.ChannelDescription;
 import pl.uplukaszp.grafana.domain.thingspeak.Field;
@@ -29,13 +28,18 @@ public class SearchService {
 			Channel channelFeed = channelRepository.getChannelFeed(id, readKey);
 			List<Field> fields = channelFeed.getFields();
 			for (Field field : fields) {
-				Metric metric = new Metric();
-				metric.setText(channelFeed.getName() + " - " + field.getName());
-				metric.setValue(channelDescription.getId() + "," + field.getNumber());
+				Metric metric = getMetric(channelDescription, channelFeed, field);
 				metrics.add(metric);
 			}
 		}
 		return metrics;
+	}
+
+	private Metric getMetric(ChannelDescription channelDescription, Channel channelFeed, Field field) {
+		Metric metric = new Metric();
+		metric.setText(channelFeed.getName() + " - " + field.getName());
+		metric.setValue(channelDescription.getId() + "," + field.getNumber());
+		return metric;
 	}
 
 }

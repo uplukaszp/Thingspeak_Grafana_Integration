@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -24,8 +26,11 @@ public class ChannelRepository {
 
 	Map<String, String> channelReadKeys = new HashMap<>();
 
+	private RestTemplate temp = new RestTemplate();
+
+
+	@PostConstruct
 	public List<ChannelDescription> getChannelDescriptions() {
-		RestTemplate temp = new RestTemplate();
 		ResponseEntity<List<ChannelDescription>> response = temp.exchange(
 				"https://api.thingspeak.com/channels.json?api_key=" + apiKey, HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<ChannelDescription>>() {
@@ -36,7 +41,6 @@ public class ChannelRepository {
 	}
 
 	public Channel getChannelFeed(String id, String readKey) {
-		RestTemplate temp = new RestTemplate();
 		String url = "https://api.thingspeak.com/channels/" + id + "/feeds.json?results=0"
 				+ ((readKey != null) ? "&api_key=" + readKey : "");
 		ChannelFeed feed = temp.getForObject(url, ChannelFeed.class);
