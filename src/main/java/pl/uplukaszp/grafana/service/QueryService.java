@@ -6,13 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pl.uplukaszp.grafana.domain.grafana.ColumType;
-import pl.uplukaszp.grafana.domain.grafana.Column;
-import pl.uplukaszp.grafana.domain.grafana.DataPoint;
+import pl.uplukaszp.grafana.component.TableConverter;
+import pl.uplukaszp.grafana.component.TimeSeriesConverter;
 import pl.uplukaszp.grafana.domain.grafana.GraphDataResponse;
-import pl.uplukaszp.grafana.domain.grafana.TableDataResponse;
-import pl.uplukaszp.grafana.domain.grafana.TimeSeriesGraphDataResponse;
-import pl.uplukaszp.grafana.domain.thingspeak.Feed;
 import pl.uplukaszp.grafana.domain.thingspeak.FieldData;
 import pl.uplukaszp.grafana.dto.QueryDTO;
 import pl.uplukaszp.grafana.dto.TargetDTO;
@@ -28,72 +24,34 @@ public class QueryService {
 	@Autowired
 	ChannelRepository channelRepo;
 
+	@Autowired
+	TimeSeriesConverter timeSeriesConverter;
+
+	@Autowired
+	TableConverter tableConverter;
+
 	public List<GraphDataResponse> getResponse(QueryDTO query) {
 		List<GraphDataResponse> response = new ArrayList<>();
 
 		for (TargetDTO targetDTO : query.getTargets()) {
 			String type = targetDTO.getType();
-			String[] split = targetDTO.getTarget().split(",");
-			String channelId = split[0];
-			String fieldNumber = split[1];
 			String from = convertDate(query.getFrom());
 			String to = convertDate(query.getTo());
-			String readKey = channelRepo.getReadKey(channelId);
-			FieldData fieldData = fieldDataRepo.getFieldData(channelId, fieldNumber, from, to, targetDTO.getData(),
-					readKey);
-			List<Feed> feeds = fieldData.getFeeds();
+			String readKey = channelRepo.getReadKey(targetDTO.getChannelId());
+			FieldData fieldData = fieldDataRepo.getFieldData(targetDTO.getChannelId(), targetDTO.getFieldNumber(), from,
+					to, targetDTO.getData(), readKey);
+
 			if (type.equals("table")) {
-				TableDataResponse tableDataResponse = new TableDataResponse();
-				List<Column> columns = new ArrayList<>();
-				tableDataResponse.setColumns(columns);
-				columns.add(createColumn("Date", ColumType.time));
-				columns.add(createColumn("Value", ColumType.number));
-				addRowsFromFeeds(tableDataResponse, feeds);
-				response.add(tableDataResponse);
+				response.add(tableConverter.convert(fieldData));
 			} else if (type.equals("timeseries")) {
-				TimeSeriesGraphDataResponse timeSeriesGraphDataResponse = new TimeSeriesGraphDataResponse();
-				timeSeriesGraphDataResponse.setTarget(getTargetString(fieldNumber, fieldData));
-				addDataPointsFromFeeds(timeSeriesGraphDataResponse, feeds);
-				response.add(timeSeriesGraphDataResponse);
+				response.add(timeSeriesConverter.convert(fieldData, targetDTO.getFieldNumber()));
 			}
 		}
 		return response;
-	}
-
-	private void addRowsFromFeeds(TableDataResponse tableDataResponse, List<Feed> feeds) {
-		List<List<Object>> rows = new ArrayList<>();
-		for (Feed feed : feeds) {
-			List<Object> row = new ArrayList<>(2);
-			row.add(feed.getCreatedAt());
-			row.add(feed.getValue());
-			rows.add(row);
-		}
-		tableDataResponse.setRows(rows);
-	}
-
-	private Column createColumn(String text, ColumType type) {
-		Column column = new Column();
-		column.setText(text);
-		column.setType(type);
-		return column;
-	}
-
-	private String getTargetString(String fieldNumber, FieldData fieldData) {
-		return fieldData.getChannel().getName() + "-" + fieldData.getChannel().getField(Integer.valueOf(fieldNumber));
 	}
 
 	private String convertDate(String date) {
 		return date.replace("T", " ").replace("Z", "");
 	}
 
-	private void addDataPointsFromFeeds(TimeSeriesGraphDataResponse timeSeriesGraphDataResponse, List<Feed> feeds) {
-		for (int i = 0; i < feeds.size(); i++) {
-			if (feeds.get(i).getValue() != null) {
-				DataPoint dataPoint = new DataPoint();
-				dataPoint.setTimestamp(feeds.get(i).getCreatedAt());
-				dataPoint.setMetric(feeds.get(i).getValue());
-				timeSeriesGraphDataResponse.addDataPoint(dataPoint);
-			}
-		}
-	}
 }
