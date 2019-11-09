@@ -25,6 +25,9 @@ public class QueryService {
 	ChannelRepository channelRepo;
 
 	@Autowired
+	ReadKeyService readKeyService;
+
+	@Autowired
 	TimeSeriesConverter timeSeriesConverter;
 
 	@Autowired
@@ -37,7 +40,7 @@ public class QueryService {
 			String type = targetDTO.getType();
 			String from = convertDate(query.getFrom());
 			String to = convertDate(query.getTo());
-			String readKey = channelRepo.getReadKey(targetDTO.getChannelId());
+			String readKey = readKeyService.getReadKey(targetDTO.getChannelId());
 			FieldData fieldData = fieldDataRepo.getFieldData(targetDTO.getChannelId(), targetDTO.getFieldNumber(), from,
 					to, targetDTO.getData(), readKey);
 

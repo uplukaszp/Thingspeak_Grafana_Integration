@@ -18,13 +18,15 @@ public class SearchService {
 
 	@Autowired
 	ChannelRepository channelRepository;
+	@Autowired
+	ReadKeyService readKeyService;
 
 	public List<Metric> getMetrics(SearchTargetDTO target) {
 		List<Metric> metrics = new ArrayList<>();
 		List<ChannelDescription> channelDescriptions = channelRepository.getChannelDescriptions();
 		for (ChannelDescription channelDescription : channelDescriptions) {
 			String id = channelDescription.getId();
-			String readKey = channelRepository.getReadKey(id);
+			String readKey = readKeyService.getReadKey(id);
 			Channel channelFeed = channelRepository.getChannelFeed(id, readKey);
 			List<Field> fields = channelFeed.getFields();
 			for (Field field : fields) {

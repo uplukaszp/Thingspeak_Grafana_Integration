@@ -1,8 +1,6 @@
 package pl.uplukaszp.grafana.repository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -13,10 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import pl.uplukaszp.grafana.domain.thingspeak.Channel;
 import pl.uplukaszp.grafana.domain.thingspeak.ChannelDescription;
 import pl.uplukaszp.grafana.domain.thingspeak.ChannelFeed;
-import pl.uplukaszp.grafana.domain.thingspeak.ApiKey;
-import pl.uplukaszp.grafana.domain.thingspeak.Channel;
 
 @Repository
 public class ChannelRepository {
@@ -24,10 +21,7 @@ public class ChannelRepository {
 	@Value("${thingspeak.apiKey}")
 	private String apiKey;
 
-	Map<String, String> channelReadKeys = new HashMap<>();
-
 	private RestTemplate temp = new RestTemplate();
-
 
 	@PostConstruct
 	public List<ChannelDescription> getChannelDescriptions() {
@@ -36,7 +30,6 @@ public class ChannelRepository {
 				new ParameterizedTypeReference<List<ChannelDescription>>() {
 				});
 		List<ChannelDescription> chanells = response.getBody();
-		saveReadKeys(chanells);
 		return chanells;
 	}
 
@@ -47,21 +40,4 @@ public class ChannelRepository {
 		return feed.getChannel();
 	}
 
-	public String getReadKey(String channelId) {
-		return channelReadKeys.get(channelId);
-	}
-
-	private void saveReadKeys(List<ChannelDescription> chanells) {
-		for (ChannelDescription channelDescription : chanells) {
-			channelReadKeys.put(channelDescription.getId(), getKey(channelDescription.getApiKeys()));
-		}
-	}
-
-	private String getKey(List<ApiKey> apiKeys) {
-		for (ApiKey apiKey : apiKeys) {
-			if (apiKey.getWriteFlag() == false)
-				return apiKey.getApiKey();
-		}
-		return null;
-	}
 }
