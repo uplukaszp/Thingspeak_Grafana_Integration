@@ -2,6 +2,8 @@ package pl.uplukaszp.grafana.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,8 +43,10 @@ public class QueryService {
 			String from = convertDate(query.getFrom());
 			String to = convertDate(query.getTo());
 			String readKey = readKeyService.getReadKey(targetDTO.getChannelId());
+			Map<String, String> params = targetDTO.getData();
+			String paramsString = convertToString(params);
 			FieldData fieldData = fieldDataRepo.getFieldData(targetDTO.getChannelId(), targetDTO.getFieldNumber(), from,
-					to, targetDTO.getData(), readKey);
+					to, paramsString, readKey);
 
 			if (type.equals("table")) {
 				response.add(tableConverter.convert(fieldData));
@@ -57,4 +61,13 @@ public class QueryService {
 		return date.replace("T", " ").replace("Z", "");
 	}
 
+	private String convertToString(Map<String, String> params) {
+		String paramString = "";
+		if (params != null && (!params.isEmpty())) {
+			for (Entry<String, String> entry : params.entrySet()) {
+				paramString += "&" + entry.getKey() + "=" + entry.getValue();
+			}
+		}
+		return paramString;
+	}
 }

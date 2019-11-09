@@ -34,8 +34,7 @@ public class ChannelRepository {
 	}
 
 	public Channel getChannelFeed(String id, String readKey) {
-		String url = "https://api.thingspeak.com/channels/" + id + "/feeds.json?results=0"
-				+ ((readKey != null) ? "&api_key=" + readKey : "");
+		String url = "https://api.thingspeak.com/channels/" + id + "/feeds.json?results=0" + "&api_key=" + readKey;
 		ChannelFeed feed = temp.getForObject(url, ChannelFeed.class);
 		return feed.getChannel();
 	}
