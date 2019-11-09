@@ -6,20 +6,22 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+import lombok.Setter;
 import pl.uplukaszp.grafana.domain.grafana.Metric;
 import pl.uplukaszp.grafana.domain.thingspeak.Channel;
 import pl.uplukaszp.grafana.domain.thingspeak.ChannelDescription;
 import pl.uplukaszp.grafana.domain.thingspeak.Field;
 import pl.uplukaszp.grafana.dto.SearchTargetDTO;
 import pl.uplukaszp.grafana.repository.ChannelRepository;
+import pl.uplukaszp.grafana.repository.ReadKeyRepository;
 
 @Service
+@AllArgsConstructor
 public class SearchService {
 
-	@Autowired
-	ChannelRepository channelRepository;
-	@Autowired
-	ReadKeyService readKeyService;
+	private ChannelRepository channelRepository;
+	private ReadKeyService readKeyService;
 
 	public List<Metric> getMetrics(SearchTargetDTO target) {
 		List<Metric> metrics = new ArrayList<>();

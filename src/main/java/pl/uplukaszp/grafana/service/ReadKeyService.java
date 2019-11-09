@@ -4,22 +4,20 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
 import pl.uplukaszp.grafana.domain.thingspeak.ApiKey;
 import pl.uplukaszp.grafana.domain.thingspeak.ChannelDescription;
 import pl.uplukaszp.grafana.repository.ChannelRepository;
 import pl.uplukaszp.grafana.repository.ReadKeyRepository;
 
 @Service
+@AllArgsConstructor
 public class ReadKeyService {
 
-	@Autowired
-	ChannelRepository channelRepo;
-
-	@Autowired
-	ReadKeyRepository keyRepo;
+	private ChannelRepository channelRepo;
+	private ReadKeyRepository keyRepo;
 
 	@PostConstruct
 	public void init() {

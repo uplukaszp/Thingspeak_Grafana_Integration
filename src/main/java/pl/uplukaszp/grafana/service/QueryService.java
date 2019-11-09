@@ -5,35 +5,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
 import pl.uplukaszp.grafana.component.TableConverter;
 import pl.uplukaszp.grafana.component.TimeSeriesConverter;
 import pl.uplukaszp.grafana.domain.grafana.GraphDataResponse;
 import pl.uplukaszp.grafana.domain.thingspeak.FieldData;
 import pl.uplukaszp.grafana.dto.QueryDTO;
 import pl.uplukaszp.grafana.dto.TargetDTO;
-import pl.uplukaszp.grafana.repository.ChannelRepository;
 import pl.uplukaszp.grafana.repository.FieldDataRepository;
 
 @Service
+@AllArgsConstructor
 public class QueryService {
 
-	@Autowired
-	FieldDataRepository fieldDataRepo;
-
-	@Autowired
-	ChannelRepository channelRepo;
-
-	@Autowired
-	ReadKeyService readKeyService;
-
-	@Autowired
-	TimeSeriesConverter timeSeriesConverter;
-
-	@Autowired
-	TableConverter tableConverter;
+	private FieldDataRepository fieldDataRepo;
+	private ReadKeyService readKeyService;
+	private TimeSeriesConverter timeSeriesConverter;
+	private TableConverter tableConverter;
 
 	public List<GraphDataResponse> getResponse(QueryDTO query) {
 		List<GraphDataResponse> response = new ArrayList<>();
