@@ -31,7 +31,10 @@ public class ReadKeyService {
 
 	private void saveReadKeys(List<ChannelDescription> chanells) {
 		for (ChannelDescription channelDescription : chanells) {
-			keyRepo.putReadKey(channelDescription.getId(), getKey(channelDescription.getApiKeys()));
+			String id = channelDescription.getId();
+			String key = getKey(channelDescription.getApiKeys());
+			if (key != null)
+				keyRepo.putReadKey(id, key);
 		}
 	}
 
