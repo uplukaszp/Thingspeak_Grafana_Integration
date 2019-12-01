@@ -16,4 +16,12 @@ public class ChannelDescription {
 	
 	@JsonProperty("api_keys")
 	private List<ApiKey> apiKeys;
+	
+	public String getReadKey() {
+		for (ApiKey apiKey : apiKeys) {
+			if (apiKey.getWriteFlag() == false)
+				return apiKey.getApiKey();
+		}
+		return null;
+	}
 }

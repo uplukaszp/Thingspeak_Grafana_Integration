@@ -32,7 +32,7 @@ public class GrafanaRequestController {
 	@RequestMapping(path = "/search", method = RequestMethod.POST)
 	public ResponseEntity<List<Metric>> search(@RequestBody(required = false) SearchTargetDTO request) {
 
-		return ResponseEntity.ok(searchService.getMetrics(request));
+		return ResponseEntity.ok(searchService.getMetrics());
 	}
 
 	@RequestMapping(path = "/query", method = RequestMethod.POST)
