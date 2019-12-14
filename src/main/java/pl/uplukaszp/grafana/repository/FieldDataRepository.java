@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import pl.uplukaszp.grafana.domain.thingspeak.FieldData;
+import pl.uplukaszp.grafana.dto.FieldDataParameters;
 
 @Repository
 public class FieldDataRepository {
@@ -13,11 +14,10 @@ public class FieldDataRepository {
 	private String apiKey;
 	private RestTemplate temp = new RestTemplate();
 
-	public FieldData getFieldData(String channelId, String field, String start, String end, String params,
-			String readKey) {
+	public FieldData getFieldData(FieldDataParameters parameters) {
 
-		String url = "https://api.thingspeak.com/channels/" + channelId + "/fields/" + field + ".json?start=" + start
-				+ "&end=" + end + "&api_key=" + readKey + params;
+		String url = "https://api.thingspeak.com/channels/" + parameters.getChannelId() + "/fields/" + parameters.getField() + ".json?start=" + parameters.getStart()
+				+ "&end=" + parameters.getEnd() + "&api_key=" + parameters.getReadKey() + parameters.getParams();
 		FieldData feed = temp.getForObject(url, FieldData.class);
 		return feed;
 	}
