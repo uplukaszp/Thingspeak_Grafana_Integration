@@ -1,0 +1,17 @@
+
+version: "3"
+services:
+ thingspeak-datasource:
+  build: "."
+  ports:
+   - 9000:9000
+  environment:
+   thingspeak.apiKey: "YOUR_API_KEY"
+ grafana:
+   image: "grafana/grafana"
+   ports:
+    - 3000:3000
+   environment:
+    GF_INSTALL_PLUGINS: "grafana-simple-json-datasource"
+   depends_on:
+    - thingspeak-datasource
