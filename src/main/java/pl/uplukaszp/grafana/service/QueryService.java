@@ -2,8 +2,6 @@ package pl.uplukaszp.grafana.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.stereotype.Service;
 
@@ -37,12 +35,12 @@ public class QueryService {
 			FieldDataParameters parameters = creator.getFieldDataParameter(query, targetDTO, readKey);
 			FieldData fieldData = fieldDataRepo.getFieldData(parameters);
 
-			if (type.equals("table")) {
+			if (type.contains("table")) {
 				response.add(tableConverter.convert(fieldData));
-			} else if (type.equals("timeseries")) {
+			} else if (type.contains("timeserie")) {
 				response.add(timeSeriesConverter.convert(fieldData, targetDTO.getFieldNumber()));
-			}else {
-				throw new IllegalArgumentException("not supported query type: "+type);
+			} else {
+				throw new IllegalArgumentException("not supported query type: " + type);
 			}
 		}
 		return response;
