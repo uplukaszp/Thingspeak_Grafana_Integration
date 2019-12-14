@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import pl.uplukaszp.grafana.component.TimeSeriesConverter;
-import pl.uplukaszp.grafana.domain.grafana.DataPoint;
 import pl.uplukaszp.grafana.domain.grafana.TimeSeriesGraphDataResponse;
 import pl.uplukaszp.grafana.domain.thingspeak.Feed;
 import pl.uplukaszp.grafana.domain.thingspeak.FieldData;

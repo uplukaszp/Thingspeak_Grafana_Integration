@@ -1,7 +1,6 @@
 package pl.uplukaszp.grafana.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import pl.uplukaszp.grafana.component.TableConverter;
 import pl.uplukaszp.grafana.domain.grafana.ColumType;
 import pl.uplukaszp.grafana.domain.grafana.TableDataResponse;
-import pl.uplukaszp.grafana.domain.thingspeak.Feed;
 import pl.uplukaszp.grafana.domain.thingspeak.FieldData;
 
 @RunWith(MockitoJUnitRunner.class)
