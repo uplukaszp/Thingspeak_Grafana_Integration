@@ -55,6 +55,9 @@ java -jar  --thingspeak.apiKey==YOUR_ACCOUNT_API_KEY
 By default application will be start at port 8080
 
 ## Installation using docker
+Project can be run as docker image. Before build the image, you should specify ThingSpeak API Key in file application.properties, as in example file.
+
+### Installation using docker compose
 TODO
 
 # Registration datasources
